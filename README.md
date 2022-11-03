@@ -2,9 +2,9 @@
 Garys Pawn &amp; Gun DOS system replacement
 
 ## Install
-'''
+```
 pip install PySimpleGUI
-'''
+```
 
 ## Todo
 - error handling with sg.popup('Error!', variable)
