@@ -1,96 +1,128 @@
-# coc-pyright settings:
-# type: ignore
-
 import PySimpleGUI as sg
 from datetime import date
 
-# Theme
-sg.theme('DarkAmber')
+# Declarations
+today = date.today()
 
-# Variable declaration
-today = date.today().strftime("%m/%d/%y")
 
-# Column definition
-first_column = [[sg.Text("Date:", size=(21, 1)), sg.Text(today)],
-                [sg.Text("Beginning Cash on Hand:",
-                         size=(21, 1)), sg.Text("tmp")],
-                [sg.Text("Sales:", size=(21, 1)), sg.Input(s=15)],
-                [sg.Text("Layaways:", size=(21, 1)), sg.Input(s=15)],
-                [sg.Text("Total Register Sales:", size=(21, 1)),
-                 sg.Text("0", key="-TRS-")],
-                [sg.Text("Pawn Fees:", size=(21, 1)), sg.Input(s=15)],
-                [sg.Text("Pawn Redeem:", size=(21, 1)), sg.Input(s=15)],
-                [sg.Text("Wholesale/Giftcard:", size=(21, 1)), sg.Input(s=15)],
-                [sg.Text("Register Tax:", size=(21, 1)), sg.Input(s=15)],
-                [sg.Text("Layaway Tax:", size=(21, 1)), sg.Input(s=15)],
-                [sg.Text("Total Tax Collected:", size=(21, 1)), sg.Text("0", key="-TTC-")],
-                [sg.Text("Total:", size=(21, 1)), sg.Text("tmp")]]
+def convert(args):
+    try:
+        result = tuple(map(float, args))
+        return True, result
+    except ValueError:
+        return False, 'Wrong number input !'
 
-second_column = [[sg.Text("Total Cash on Hand:", size=(21, 1)), sg.Text("tmp")],
-                 [sg.Text("Purchase:", size=(21, 1)), sg.Input(s=15)],
-                 [sg.Text("New Mdde. Purchase:", size=(21, 1)), sg.Input(s=15)],
-                 [sg.Text("New Pawns:", size=(21, 1)), sg.Input(s=15)],
-                 [sg.Text("Bank Deposits:", size=(21, 1)), sg.Input(s=15)],
-                 [sg.Text("Cash PD Out Supplies:", size=(21, 1)),
-                  sg.Input(s=15)],
-                 [sg.Text("Freight & Postage:", size=(21, 1)), sg.Input(s=15)],
-                 [sg.Text("Yard & Pest Control: ", size=(21, 1)),
-                  sg.Input(s=15)],
-                 [sg.Text("Gift Card Redeemed:", size=(21, 1)), sg.Input(s=15)],
-                 [sg.Text("Miscellaneous Expense:", size=(21, 1)),
-                  sg.Input(s=15)],
-                 [sg.Text("Ending Cash on Hand:", size=(21, 1)),
-                  sg.Text("tmp")],
-                 [sg.Text("Total:", size=(21, 1)), sg.Text("tmp")]]
 
-bottom_column = [[sg.Text("Layaways Including Tax:"), sg.Text("tmp"),
-                  sg.Text("Over or Short:"), sg.Text("tmp"),
-                  sg.Text("Pawn Fees:"), sg.Text("tmp")]]
+def input_frame():
+    return [
+        [sg.Text(item, size=size1, pad=(0, 0)),
+         sg.Input('0.00', size=size2, enable_events=True, key=item, expand_x=True)]
+        for item in input_items]
 
-###################
-# Column | Column #
-# --------------- #
-#  Bottom Column  #
-# --------------- #
-#     Buttons     #
-###################
-# Layout
-layout = [[sg.Column(first_column),
-           sg.VerticalSeparator(),
-           sg.Column(second_column)],
-          [sg.HorizontalSeparator()],
-          [sg.Column(bottom_column)],
-          [sg.HorizontalSeparator()],
-          [sg.Button("Calculate")]]
 
-# Create the window
-window = sg.Window("Garys Pawn - Daily Report", layout,
-                   element_justification="center")
-# window = sg.Window('Garys Pawn - Daily Report', layout, element_justification='center', resizable=True)
+def output_frame():
+    return [
+        [sg.Text(item, size=size1, pad=(0, 0)),
+         sg.Input("0.00", size=size2, disabled=True, background_color='CadetBlue1', key=item, expand_x=True)]
+        for item in output_items]
+
+
+# Window size
+size1, size2 = 20, 20
+
+# Dates column
+date = ("Date",)
+
+# Left column
+# r[0]  = Sales
+# r[1]  = Layaways
+# r[2]  = Pawn Fees
+# r[3]  = Pawn Redeem
+# r[4]  = Wholesale / Gift Card
+# r[5]  = Register Tax
+# r[6]  = Layaways Including Tax
+# r[7]  = Purchase
+# r[8]  = New Pawns
+# r[9]  = Bank Deposits
+# r[10] = Cash Pd Out Supplies
+# r[11] = Freight + Postage
+# r[12] = Yard + Pest Control
+# r[13] = Gift Card Redeemed
+# r[14] = Misc
+input_items = ('Sales', 'Layaways', 'Pawn Fees', 'Pawn Redeem', 'Wholesale / Gift Card',
+               'Register Tax', 'Layaways Including Tax', 'Purchase', 'New Pawns', 'Bank Deposits', 'Cash PD Out Supplies', 'Freight & Postage', 'Yard & Pest Control', 'Gift Card Redeemed', 'Misc')
+
+# Right column
+output_items = ('Beginning COH', 'Total Register Sales', 'Layaway Tax',
+                'Total Tax Collected', 'Ending COH', 'Over or Short')
+
+# Theme / font
+sg.theme('SandyBeach')
+sg.SetOptions(font=('Arial', 10, 'bold'))
+
+# Window layout
+layout = [
+    [sg.Input(key='-INPUT-'),
+     sg.FileBrowse(file_types=(("TXT Files", "*.txt"), ("ALL Files", "*.*"))),
+     sg.Button("Open"),
+     ],
+    # [sg.Button('Date', button_color='red', key='Open')],
+    [sg.Text()],
+    [sg.Frame('Input',  input_frame(),  vertical_alignment='top', expand_y=True, expand_x=True),
+     sg.Frame('Output', output_frame(), vertical_alignment='top', expand_y=True, expand_x=True)],
+    [sg.Text()],
+    [sg.Button('Save & Exit', key='Exit')]
+]
+
+# Window setup
+window = sg.Window('Garys Pawn & Gun', layout, finalize=True)
+window.bind("<Return>", "Return")
+for item in output_items + ('Exit',):
+    window[item].block_focus()
 
 # Event loop
 while True:
     event, values = window.read()
-    # End program is window closed
-    if event == sg.WIN_CLOSED:
+    # Hitting exit or close saves to file + closes
+    # TODO: export to excel sheets based on date
+    if event in ('Exit',  sg.WIN_CLOSED):
+        f = open("TMP.txt", "w")
+        f.write(f"{ecoh}\n")
+        f.close()
         break
-    # On calculate, add required things
-    if event == "Calculate":
-        # Sales + Layaways = Total Register Sales
-        sales = float(values[0])
-        layaways = float(values[1])
-        trs = round((sales + layaways),2)
-        window['-TRS-'].update(trs)
+    # Enter / tab goes to next cell
+    if event == 'Return':
+        user_event = window.user_bind_event
+        user_event.widget.tk_focusNext().focus()
+        user_event.widget.tk_focusNext().select = True
+        select = True
+    if event == 'Open':
+        filename = values['-INPUT-']
+        if Path(filename).is_file():
+            try:
+                with open(filename, "rt", encoding='utf-8') as f:
+                    text = f.read()
+                popup_text(filename, text)
+            except Exception as e:
+                print("Error: ", e)
+    # Math
+    else:
+        status, r = convert(tuple(map(lambda x: values[x], input_items)))
+        if not status:
+            window['Status'].update(r)
+            continue
+        # Total Register Sales = Sales + Layaways
+        bcoh = 30909.39
+        trs = round(r[0]+r[1], 2)
+        # Layaway Tax = Layaways Including Tax - Layaways
+        lt = round(r[6]-r[1], 2)
+        # Total Tax Collected = Register Tax + Layaway Tax
+        ttc = round(r[5] + lt, 2)
+        # Ending Cash on Hand = bcoh+sum(trs+ttc+r[2]+r[3]+r[4])-sum(r[7]-r[14])
+        leftECOH = [trs, ttc, r[2], r[3], r[4]]
+        rightECOH = [r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14]]
+        ecoh = round(bcoh+sum(leftECOH)-sum(rightECOH), 2)
+        for item, value in zip(output_items, (bcoh, trs, lt, ttc, ecoh)):
+            window[item].update(value)
 
-        # Register Tax + Layaway Tax = Total Tax
-        register_tax = float(values[3])
-        layaway_tax = float(values[4])
-        ttc = round((register_tax + layaway_tax),2)
-        window['-TTC-'].update(ttc)
-
-# event, values= window.read()
-# Do something with the information gathered
-# print('Hello', values[0], "! Thanks for trying PySimpleGUI")
-
-# Finish up by removing from the screen
 window.close()
