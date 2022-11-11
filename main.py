@@ -40,7 +40,7 @@ def inputfromfile():
 
 
 # Window size
-size1, size2 = 20, 20
+    size1, size2 = 20, 20
 
 # Dates column
 date = ("Date",)
@@ -124,8 +124,8 @@ while True:
             with open(filename, "rt", encoding='utf-8') as f:
                 text = f.read()
                 while i < 16:
-                inputlist.append()
-                i += 1
+                    inputlist.append()
+                    i += 1
                 #print(text)
 
             # popup_text(filename, text)
