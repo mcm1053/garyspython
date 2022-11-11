@@ -1,10 +1,9 @@
 # garyspython
 Garys Pawn &amp; Gun DOS system replacement
 
-## Install
-```
-pip install PySimpleGUI
-```
+## Dependencies
+- `PySimpleGUI`
+- `pandas`
 
 ## Todo
 - Implement larger font / resizable window

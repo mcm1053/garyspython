@@ -1,9 +1,16 @@
 import PySimpleGUI as sg
+import pandas as pd
 from datetime import date
+import pathlib
 
 # Declarations
-today = date.today()
 tofile = []
+today = date.today()
+d1 = today.strftime("%d-%m-%Y")
+
+
+
+inputlist =[]
 
 # Conversion for simple math
 def convert(args):
@@ -26,6 +33,10 @@ def output_frame():
         [sg.Text(item, size=size1, pad=(0, 0)),
          sg.Input("0.00", size=size2, disabled=True, background_color='CadetBlue1', key=item, expand_x=True)]
         for item in output_items]
+
+
+def inputfromfile():
+
 
 
 # Window size
@@ -71,7 +82,7 @@ layout = [
         sg.Button('Save & Exit', key='Exit'),
         sg.Input(key='-INPUT-'),
         sg.FileBrowse(file_types=(
-            ("TXT Files", "*.txt"), ("ALL Files", "*.*"))),
+            ("CSV Files", "*.csv"), ("ALL Files", "*.*"))),
         sg.Button('Open', key='Open'),
     ],
 ]
@@ -85,39 +96,42 @@ for item in output_items + ('Exit',):
 # Event loop
 while True:
     event, values = window.read()
+
     # Hitting exit or close saves to file + closes
-    # TODO: Export to excel sheets based on date
     if event in ('Exit',  sg.WIN_CLOSED):
         # Add all variables to a list
         i = 0
-        while i < 15:
-            tofile.append(r[i])
+        while i < 16:
+            tofile.append(str(r[i]))
             i += 1
-        # tofile.append(r[0])
-        # tofile.append(r[1])
-        # Write all vars to a file:
-        # TODO: Make the name the current date
-        with open("TMP.txt", "w") as f:
-            for line in tofile:
-                f.write(f"{line}\n")
-            f.close()
-        break
+        dict = {'data': tofile, 'names':input_items}  
+        df = pd.DataFrame(dict) 
+        filename=str(d1)
+        filename = filename+".csv"
+        df.to_csv(filename) 
+    
     # Enter / tab goes to next cell
     if event == 'Return':
         user_event = window.user_bind_event
         user_event.widget.tk_focusNext().focus()
         user_event.widget.tk_focusNext().select = True
         select = True
+
     # TODO: Setup open functionality
     if event == 'Open':
         filename = values['-INPUT-']
-        if Path(filename).is_file():
-            try:
-                with open(filename, "rt", encoding='utf-8') as f:
-                    text = f.read()
-                popup_text(filename, text)
-            except Exception as e:
-                print("Error: ", e)
+        try:
+            with open(filename, "rt", encoding='utf-8') as f:
+                text = f.read()
+                while i < 16:
+                inputlist.append()
+                i += 1
+                #print(text)
+
+            # popup_text(filename, text)
+        except Exception as e:
+            print("Error: ", e)
+
     # Math
     else:
         status, r = convert(tuple(map(lambda x: values[x], input_items)))
