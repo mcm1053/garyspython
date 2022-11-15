@@ -7,11 +7,10 @@ import pathlib
 tofile = []
 today = date.today()
 d1 = today.strftime("%d-%m-%Y")
+inputlist = []
 
-
-
-inputlist =[]
-
+# Window size
+size1, size2 = 20, 20
 # Conversion for simple math
 def convert(args):
     try:
@@ -35,12 +34,12 @@ def output_frame():
         for item in output_items]
 
 
-def inputfromfile():
-
-
-
-# Window size
-    size1, size2 = 20, 20
+def read_csv(filename):
+    df = pd.read_csv(filename, usecols = ['data'])
+    # print(type(df))
+    listinput = df['data'].values.tolist()
+    print(listinput)
+    # return listinput
 
 # Dates column
 date = ("Date",)
@@ -67,7 +66,7 @@ input_items = ('Sales', 'Layaways', 'Pawn Fees', 'Pawn Redeem', 'Wholesale / Gif
 
 # Right column
 output_items = ('Beginning COH', 'Total Register Sales', 'Layaway Tax',
-                'Total Tax Collected', 'Ending COH', 'Over or Short')
+                'Total Tax Collected', 'Ending COH', 'Over or Short','Null','Null','Null','Null','Null','Null','Null','Null','Null','Null')
 
 # Theme / font
 sg.theme('SandyBeach')
@@ -78,13 +77,7 @@ layout = [
     [sg.Frame('Input',  input_frame(),  vertical_alignment='top', expand_y=True, expand_x=True),
      sg.Frame('Output', output_frame(), vertical_alignment='top', expand_y=True, expand_x=True)],
     [sg.Text()],
-    [
-        sg.Button('Save & Exit', key='Exit'),
-        sg.Input(key='-INPUT-'),
-        sg.FileBrowse(file_types=(
-            ("CSV Files", "*.csv"), ("ALL Files", "*.*"))),
-        sg.Button('Open', key='Open'),
-    ],
+    [sg.Button('Save & Exit', key='Exit')],
 ]
 
 # Window setup
@@ -104,7 +97,7 @@ while True:
         while i < 16:
             tofile.append(str(r[i]))
             i += 1
-        dict = {'data': tofile, 'names':input_items}  
+        dict = {'data': tofile, 'input':input_items, 'output':output_items}  
         df = pd.DataFrame(dict) 
         filename=str(d1)
         filename = filename+".csv"
@@ -117,28 +110,12 @@ while True:
         user_event.widget.tk_focusNext().select = True
         select = True
 
-    # TODO: Setup open functionality
-    if event == 'Open':
-        filename = values['-INPUT-']
-        try:
-            with open(filename, "rt", encoding='utf-8') as f:
-                text = f.read()
-                while i < 16:
-                    inputlist.append()
-                    i += 1
-                #print(text)
-
-            # popup_text(filename, text)
-        except Exception as e:
-            print("Error: ", e)
-
     # Math
     else:
         status, r = convert(tuple(map(lambda x: values[x], input_items)))
         if not status:
             window['Status'].update(r)
             continue
-        # TODO: If file is opened from another date, fill variables. else, use ecoh from yesterday as todays bcoh
         bcoh = 30909.39
         # Total Register Sales = Sales + Layaways
         trs = round(r[0]+r[1], 2)

@@ -4,6 +4,7 @@ Garys Pawn &amp; Gun DOS system replacement
 ## Dependencies
 - `PySimpleGUI`
 - `pandas`
+- `tk`
 
 ## Todo
 - Implement larger font / resizable window
