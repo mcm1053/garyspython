@@ -3,6 +3,7 @@ from datetime import date
 import pathlib
 import glob
 import os
+import re
 
 # Declarations
 tofile = []
@@ -32,6 +33,18 @@ def output_frame():
         [sg.Text(item, size=size1, pad=(0, 0)),
          sg.Input("0.00", size=size2, disabled=True, background_color='CadetBlue1', key=item, expand_x=True)]
         for item in output_items]
+
+def find_last_file_tf():
+    dir=os.getcwd()
+    dir1 = "*.gp"
+    list_of_files = glob.glob(dir1) # means all if need specific format then *.csv
+    if not list_of_files:
+        return False
+    else:
+        latest_file = max(list_of_files, key=os.path.getctime)
+        if os.path.isfile(latest_file):
+            return latest_file
+
 
 # Dates column
 date = ("Date",)
@@ -81,7 +94,6 @@ for item in output_items + ('Exit',):
 # Event loop
 while True:
     event, values = window.read()
-
     # Hitting exit or close saves to file + closes
     if event in ('Exit',  sg.WIN_CLOSED):
         # f = open("TMP.txt", "w")
@@ -111,8 +123,15 @@ while True:
         if not status:
             window['Status'].update(r)
             continue
-        if 
-        bcoh = 0
+        dec=find_last_file_tf()
+        if dec == False:
+            bcoh = 0.00
+        else:
+            latest = open(dec)
+            content = latest.readlines()
+            yesterday_ending = content[23]
+            bcoh = float(yesterday_ending[11:])
+
         # Total Register Sales = Sales + Layaways
         trs = round(r[0]+r[1], 2)
         # Layaway Tax = Layaways Including Tax - Layaways
