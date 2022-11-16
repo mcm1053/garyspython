@@ -1,0 +1,25 @@
+Input Items:
+Sales	897.0
+Layaways	7876.0
+Pawn Fees	876.0
+Pawn Redeem	0.0
+Wholesale / Gift Card	0.0
+Register Tax	0.0
+Layaways Including Tax	0.0
+Total COH	0.0
+Purchase	0.0
+New Pawns	0.0
+Bank Deposits	0.0
+Cash PD Out Supplies	0.0
+Freight & Postage	0.0
+Yard & Pest Control	0.0
+Gift Card Redeemed	0.0
+Misc	0.0
+
+Output Items:
+Beginning COH	30909.39
+Total Register Sales	8773.0
+Layaway Tax	-7876.0
+Total Tax Collected	-7876.0
+Ending COH	32682.39
+Over or Short	-32682.39

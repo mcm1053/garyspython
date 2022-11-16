@@ -1,13 +1,13 @@
 import PySimpleGUI as sg
-import pandas as pd
 from datetime import date
 import pathlib
+import glob
+import os
 
 # Declarations
 tofile = []
 today = date.today()
 d1 = today.strftime("%d-%m-%Y")
-inputlist = []
 
 # Window size
 size1, size2 = 20, 20
@@ -32,14 +32,6 @@ def output_frame():
         [sg.Text(item, size=size1, pad=(0, 0)),
          sg.Input("0.00", size=size2, disabled=True, background_color='CadetBlue1', key=item, expand_x=True)]
         for item in output_items]
-
-
-def read_csv(filename):
-    df = pd.read_csv(filename, usecols = ['data'])
-    # print(type(df))
-    listinput = df['data'].values.tolist()
-    print(listinput)
-    # return listinput
 
 # Dates column
 date = ("Date",)
@@ -66,7 +58,7 @@ input_items = ('Sales', 'Layaways', 'Pawn Fees', 'Pawn Redeem', 'Wholesale / Gif
 
 # Right column
 output_items = ('Beginning COH', 'Total Register Sales', 'Layaway Tax',
-                'Total Tax Collected', 'Ending COH', 'Over or Short','Null','Null','Null','Null','Null','Null','Null','Null','Null','Null')
+                'Total Tax Collected', 'Ending COH', 'Over or Short')
 
 # Theme / font
 sg.theme('SandyBeach')
@@ -92,16 +84,19 @@ while True:
 
     # Hitting exit or close saves to file + closes
     if event in ('Exit',  sg.WIN_CLOSED):
-        # Add all variables to a list
-        i = 0
-        while i < 16:
-            tofile.append(str(r[i]))
-            i += 1
-        dict = {'data': tofile, 'input':input_items, 'output':output_items}  
-        df = pd.DataFrame(dict) 
-        filename=str(d1)
-        filename = filename+".csv"
-        df.to_csv(filename) 
+        # f = open("TMP.txt", "w")
+        in_list = list(input_items)
+        out_list = list(output_items)
+        out_list2 = [bcoh, trs, lt, ttc, ecoh, oos]
+        with open(d1+".txt"+".gp","w") as f:
+            f.write("Input Items:\n") 
+            for i in range(0, len(r)):
+                # Velocity here is the list
+                f.write("{0}\t{1}\n".format(in_list[i],r[i]))
+            f.write("\nOutput Items:\n")
+            for i in range(0, len(out_list)):
+                f.write("{0}\t{1}\n".format(out_list[i],out_list2[i]))
+        break
     
     # Enter / tab goes to next cell
     if event == 'Return':
@@ -116,7 +111,8 @@ while True:
         if not status:
             window['Status'].update(r)
             continue
-        bcoh = 30909.39
+        if 
+        bcoh = 0
         # Total Register Sales = Sales + Layaways
         trs = round(r[0]+r[1], 2)
         # Layaway Tax = Layaways Including Tax - Layaways
