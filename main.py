@@ -145,7 +145,7 @@ while True:
         ecoh = round(bcoh+sum(leftECOH)-sum(rightECOH), 2)
         # Over or Short = Total Cash on Hand - Ending Cash on Hand
         oos = round(r[6]-ecoh, 2)
-        for item, value in zip(output_items, (bcoh, trs, lt, ttc, r[6], oos)):
+        for item, value in zip(output_items, (bcoh, trs,layaways, lt, ttc, r[6], oos)):
             window[item].update(value)
 
 window.close()
