@@ -9,6 +9,8 @@ import re
 tofile = []
 today = date.today()
 d1 = today.strftime("%d-%m-%Y")
+# MS SALES TAX
+tax = 0.07
 
 # Window size
 size1, size2 = 20, 20
@@ -51,26 +53,25 @@ date = ("Date",)
 
 # Left column
 # r[0]  = Sales
-# r[1]  = Layaways
-# r[2]  = Pawn Fees
-# r[3]  = Pawn Redeem
-# r[4]  = Wholesale / Gift Card
-# r[5]  = Register Tax
-# r[6]  = Layaways Including Tax
-# r[7]  = Total COH
-# r[8]  = Purchase
-# r[9]  = New Pawns
-# r[10]  = Bank Deposits
-# r[11] = Cash Pd Out Supplies
-# r[12] = Freight + Postage
-# r[13] = Yard + Pest Control
-# r[14] = Gift Card Redeemed
-# r[15] = Misc
-input_items = ('Sales', 'Layaways', 'Pawn Fees', 'Pawn Redeem', 'Wholesale / Gift Card',
+# r[1]  = Pawn Fees
+# r[2]  = Pawn Redeem
+# r[3]  = Wholesale / Gift Card
+# r[4]  = Register Tax
+# r[5]  = Layaways Including Tax
+# r[6]  = Total COH
+# r[7]  = Purchase
+# r[8]  = New Pawns
+# r[9]  = Bank Deposits
+# r[10] = Cash Pd Out Supplies
+# r[11] = Freight + Postage
+# r[12] = Yard + Pest Control
+# r[13] = Gift Card Redeemed
+# r[14] = Misc
+input_items = ('Sales', 'Pawn Fees', 'Pawn Redeem', 'Wholesale / Gift Card',
                'Register Tax', 'Layaways Including Tax', 'Total COH', 'Purchase', 'New Pawns', 'Bank Deposits', 'Cash PD Out Supplies', 'Freight & Postage', 'Yard & Pest Control', 'Gift Card Redeemed', 'Misc')
 
 # Right column
-output_items = ('Beginning COH', 'Total Register Sales', 'Layaway Tax',
+output_items = ('Beginning COH', 'Total Register Sales', 'Layaways', 'Layaway Tax',
                 'Total Tax Collected', 'Ending COH', 'Over or Short')
 
 # Theme / font
@@ -99,7 +100,7 @@ while True:
         # f = open("TMP.txt", "w")
         in_list = list(input_items)
         out_list = list(output_items)
-        out_list2 = [bcoh, trs, lt, ttc, ecoh, oos]
+        out_list2 = [bcoh, trs,layaways, lt, ttc, ecoh, oos]
         with open(d1+".txt"+".gp","w") as f:
             f.write("Input Items:\n") 
             for i in range(0, len(r)):
@@ -132,19 +133,21 @@ while True:
             yesterday_ending = content[23]
             bcoh = float(yesterday_ending[11:])
 
+        # Layaways = Layaways Including Tax / tax
+        lay = round(r[5]/(1 + tax), 2)
         # Total Register Sales = Sales + Layaways
-        trs = round(r[0]+r[1], 2)
+        trs = round(r[0]+lay, 2)
         # Layaway Tax = Layaways Including Tax - Layaways
-        lt = round(r[6]-r[1], 2)
+        lt = round(r[5]-lay, 2)
         # Total Tax Collected = Register Tax + Layaway Tax
-        ttc = round(r[5] + lt, 2)
+        ttc = round(r[4] + lt, 2)
         # Ending Cash on Hand = bcoh+sum(trs+ttc+r[2]+r[3]+r[4])-sum(r[7]-r[14])
-        leftECOH = [trs, ttc, r[2], r[3], r[4]]
-        rightECOH = [r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15]]
+        leftECOH = [trs, ttc, r[1], r[2], r[3]]
+        rightECOH = [r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14]]
         ecoh = round(bcoh+sum(leftECOH)-sum(rightECOH), 2)
         # Over or Short = Total Cash on Hand - Ending Cash on Hand
-        oos = round(r[7]-ecoh, 2)
-        for item, value in zip(output_items, (bcoh, trs, lt, ttc, r[7], oos)):
+        oos = round(r[6]-ecoh, 2)
+        for item, value in zip(output_items, (bcoh, trs, lay, lt, ttc, r[6], oos)):
             window[item].update(value)
 
 window.close()
