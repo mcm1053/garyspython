@@ -100,7 +100,7 @@ while True:
         # f = open("TMP.txt", "w")
         in_list = list(input_items)
         out_list = list(output_items)
-        out_list2 = [bcoh, trs,layaways, lt, ttc, ecoh, oos]
+        out_list2 = [bcoh, trs, lay, lt, ttc, ecoh, oos]
         with open(d1+".txt"+".gp","w") as f:
             f.write("Input Items:\n") 
             for i in range(0, len(r)):
